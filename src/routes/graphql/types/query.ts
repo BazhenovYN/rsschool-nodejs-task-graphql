@@ -1,0 +1,66 @@
+import { GraphQLList, GraphQLNonNull, GraphQLObjectType } from 'graphql';
+
+import { getMemberTypeById, getMemberTypes } from '../resolvers/memberType.js';
+import { getPostById, getPosts } from '../resolvers/post.js';
+import { getProfileById, getProfiles } from '../resolvers/profile.js';
+import { getUserById, getUsers } from '../resolvers/user.js';
+import { Context, QueryArguments } from './common.js';
+import { MemberType, MemberTypeEnumType } from './memberType.js';
+import { PostType } from './post.js';
+import { ProfileType } from './profile.js';
+import { UserType } from './user.js';
+import { UUIDType } from './uuid.js';
+
+export const rootQuery = new GraphQLObjectType<unknown, Context>({
+  name: 'Query',
+  fields: {
+    users: {
+      type: new GraphQLList(UserType),
+      resolve: async (_source, _args, { prisma }) => getUsers(prisma),
+    },
+    user: {
+      type: UserType,
+      args: {
+        id: { type: new GraphQLNonNull(UUIDType) },
+      },
+      resolve: async (_source, { id }: QueryArguments, { prisma }) =>
+        getUserById(id, prisma),
+    },
+    posts: {
+      type: new GraphQLList(PostType),
+      resolve: async (_source, _args, { prisma }) => getPosts(prisma),
+    },
+    post: {
+      type: PostType,
+      args: {
+        id: { type: new GraphQLNonNull(UUIDType) },
+      },
+      resolve: async (_source, { id }: QueryArguments, { prisma }) =>
+        getPostById(id, prisma),
+    },
+    profiles: {
+      type: new GraphQLList(ProfileType),
+      resolve: async (_source, _args, { prisma }) => getProfiles(prisma),
+    },
+    profile: {
+      type: ProfileType,
+      args: {
+        id: { type: new GraphQLNonNull(UUIDType) },
+      },
+      resolve: async (_source, { id }: QueryArguments, { prisma }) =>
+        getProfileById(id, prisma),
+    },
+    memberTypes: {
+      type: new GraphQLList(MemberType),
+      resolve: async (_source, _args, { prisma }) => getMemberTypes(prisma),
+    },
+    memberType: {
+      type: MemberType,
+      args: {
+        id: { type: new GraphQLNonNull(MemberTypeEnumType) },
+      },
+      resolve: async (_source, { id }: QueryArguments, { prisma }) =>
+        getMemberTypeById(id, prisma),
+    },
+  },
+});
