@@ -43,6 +43,13 @@ export const createUser = async (user: NewUser, prisma: PrismaClient) => {
   });
 };
 
+export const changeUser = async (id: string, user: NewUser, prisma: PrismaClient) => {
+  return prisma.user.update({
+    where: { id },
+    data: user,
+  });
+};
+
 export const deleteUser = async (id: string, prisma: PrismaClient) => {
   await prisma.user.delete({
     where: {

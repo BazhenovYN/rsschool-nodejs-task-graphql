@@ -27,6 +27,17 @@ export const createProfile = async (profile: NewProfile, prisma: PrismaClient) =
   });
 };
 
+export const changeProfile = async (
+  id: string,
+  profile: NewProfile,
+  prisma: PrismaClient,
+) => {
+  return prisma.profile.update({
+    where: { id },
+    data: profile,
+  });
+};
+
 export const deleteProfile = async (id: string, prisma: PrismaClient) => {
   await prisma.profile.delete({
     where: {

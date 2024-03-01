@@ -27,6 +27,13 @@ export const createPost = async (post: NewPost, prisma: PrismaClient) => {
   });
 };
 
+export const changePost = async (id: string, post: NewPost, prisma: PrismaClient) => {
+  return prisma.post.update({
+    where: { id },
+    data: post,
+  });
+};
+
 export const deletePost = async (id: string, prisma: PrismaClient) => {
   await prisma.post.delete({
     where: {
