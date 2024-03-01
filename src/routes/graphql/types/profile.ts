@@ -1,17 +1,16 @@
-import { GraphQLBoolean, GraphQLInt, GraphQLNonNull, GraphQLObjectType } from 'graphql';
+import { Profile } from '@prisma/client';
+import {
+  GraphQLBoolean,
+  GraphQLInputObjectType,
+  GraphQLInt,
+  GraphQLNonNull,
+  GraphQLObjectType,
+} from 'graphql';
 
 import { getMemberTypeById } from '../resolvers/memberType.js';
 import { Context } from './common.js';
 import { MemberType, MemberTypeEnumType } from './memberType.js';
 import { UUIDType } from './uuid.js';
-
-interface Profile {
-  id: string;
-  isMale: boolean;
-  yearOfBirth: number;
-  userId: string;
-  memberTypeId: string;
-}
 
 export const ProfileType = new GraphQLObjectType<Profile, Context>({
   name: 'Profile',
@@ -26,5 +25,15 @@ export const ProfileType = new GraphQLObjectType<Profile, Context>({
       resolve: ({ memberTypeId }, _args, { prisma }) =>
         getMemberTypeById(memberTypeId, prisma),
     },
+  },
+});
+
+export const ProfileInputType = new GraphQLInputObjectType({
+  name: 'CreateProfileInput',
+  fields: {
+    isMale: { type: new GraphQLNonNull(GraphQLBoolean) },
+    yearOfBirth: { type: new GraphQLNonNull(GraphQLInt) },
+    userId: { type: new GraphQLNonNull(UUIDType) },
+    memberTypeId: { type: new GraphQLNonNull(MemberTypeEnumType) },
   },
 });

@@ -22,7 +22,7 @@ const plugin: FastifyPluginAsyncTypebox = async (fastify) => {
       const { query, variables } = req.body;
 
       const errors = validate(gqlSchema, parse(query), [depthLimit(MAX_DEPTH_LIMIT)]);
-      if (errors) {
+      if (errors.length > 0) {
         return { errors };
       }
 

@@ -1,4 +1,5 @@
 import { PrismaClient } from '@prisma/client';
+import { NewUser } from '../types/common.js';
 
 export const getUsers = async (prisma: PrismaClient) => {
   return prisma.user.findMany();
@@ -33,5 +34,11 @@ export const subscribedToUser = async (userId: string, prisma: PrismaClient) => 
         },
       },
     },
+  });
+};
+
+export const createUser = async (user: NewUser, prisma: PrismaClient) => {
+  return prisma.user.create({
+    data: user,
   });
 };

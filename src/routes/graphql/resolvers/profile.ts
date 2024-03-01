@@ -1,4 +1,5 @@
 import { PrismaClient } from '@prisma/client';
+import { NewProfile } from '../types/common.js';
 
 export const getProfiles = async (prisma: PrismaClient) => {
   return prisma.profile.findMany();
@@ -17,5 +18,11 @@ export const getProfileByUserId = async (userId: string, prisma: PrismaClient) =
     where: {
       userId,
     },
+  });
+};
+
+export const createProfile = async (profile: NewProfile, prisma: PrismaClient) => {
+  return prisma.profile.create({
+    data: profile,
   });
 };

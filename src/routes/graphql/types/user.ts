@@ -1,5 +1,7 @@
+import { User } from '@prisma/client';
 import {
   GraphQLFloat,
+  GraphQLInputObjectType,
   GraphQLList,
   GraphQLNonNull,
   GraphQLObjectType,
@@ -13,12 +15,6 @@ import { Context } from './common.js';
 import { PostType } from './post.js';
 import { ProfileType } from './profile.js';
 import { UUIDType } from './uuid.js';
-
-interface User {
-  id: string;
-  name: string;
-  balance: number;
-}
 
 export const UserType: GraphQLObjectType = new GraphQLObjectType<User, Context>({
   name: 'User',
@@ -43,4 +39,12 @@ export const UserType: GraphQLObjectType = new GraphQLObjectType<User, Context>(
       resolve: async ({ id }, _args, { prisma }) => subscribedToUser(id, prisma),
     },
   }),
+});
+
+export const UserInputType = new GraphQLInputObjectType({
+  name: 'CreateUserInput',
+  fields: {
+    name: { type: new GraphQLNonNull(GraphQLString) },
+    balance: { type: new GraphQLNonNull(GraphQLFloat) },
+  },
 });
