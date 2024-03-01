@@ -15,5 +15,6 @@ export type NewPost = Omit<Post, 'id'>;
 export type NewProfile = Omit<Profile, 'id'>;
 
 export type MutationArguments<T> = {
+  id: string;
   dto: T;
 };

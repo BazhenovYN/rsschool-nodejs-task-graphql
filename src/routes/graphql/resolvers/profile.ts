@@ -26,3 +26,12 @@ export const createProfile = async (profile: NewProfile, prisma: PrismaClient) =
     data: profile,
   });
 };
+
+export const deleteProfile = async (id: string, prisma: PrismaClient) => {
+  await prisma.profile.delete({
+    where: {
+      id,
+    },
+  });
+  return true;
+};
