@@ -1,8 +1,8 @@
 import { GraphQLList, GraphQLNonNull, GraphQLObjectType } from 'graphql';
 
 import { getMemberTypeById, getMemberTypes } from '../resolvers/memberType.js';
-import { getPostById, getPosts } from '../resolvers/post.js';
-import { getProfileById, getProfiles } from '../resolvers/profile.js';
+import { getPostById, getPosts, getPostsByAuthorId } from '../resolvers/post.js';
+import { getProfileById, getProfileByUserId, getProfiles } from '../resolvers/profile.js';
 import { getUserById, getUsers } from '../resolvers/user.js';
 import { Context, QueryArguments } from './common.js';
 import { MemberType, MemberTypeEnumType } from './memberType.js';
@@ -30,6 +30,14 @@ export const rootQuery = new GraphQLObjectType<unknown, Context>({
       type: new GraphQLList(PostType),
       resolve: async (_source, _args, { prisma }) => getPosts(prisma),
     },
+    postsByUserId: {
+      type: new GraphQLList(PostType),
+      args: {
+        id: { type: new GraphQLNonNull(UUIDType) },
+      },
+      resolve: async (_source, { id }: QueryArguments, { prisma }) =>
+        getPostsByAuthorId(id, prisma),
+    },
     post: {
       type: PostType,
       args: {
@@ -41,6 +49,14 @@ export const rootQuery = new GraphQLObjectType<unknown, Context>({
     profiles: {
       type: new GraphQLList(ProfileType),
       resolve: async (_source, _args, { prisma }) => getProfiles(prisma),
+    },
+    profileByUserId: {
+      type: ProfileType,
+      args: {
+        id: { type: new GraphQLNonNull(UUIDType) },
+      },
+      resolve: async (_source, { id }: QueryArguments, { prisma }) =>
+        getProfileByUserId(id, prisma),
     },
     profile: {
       type: ProfileType,
