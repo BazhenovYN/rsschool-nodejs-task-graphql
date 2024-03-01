@@ -58,3 +58,38 @@ export const deleteUser = async (id: string, prisma: PrismaClient) => {
   });
   return true;
 };
+
+export const subscribeTo = async (
+  userId: string,
+  authorId: string,
+  prisma: PrismaClient,
+) => {
+  return prisma.user.update({
+    where: {
+      id: userId,
+    },
+    data: {
+      userSubscribedTo: {
+        create: {
+          authorId: authorId,
+        },
+      },
+    },
+  });
+};
+
+export const unsubscribeFrom = async (
+  userId: string,
+  authorId: string,
+  prisma: PrismaClient,
+) => {
+  await prisma.subscribersOnAuthors.delete({
+    where: {
+      subscriberId_authorId: {
+        subscriberId: userId,
+        authorId: authorId,
+      },
+    },
+  });
+  return true;
+};

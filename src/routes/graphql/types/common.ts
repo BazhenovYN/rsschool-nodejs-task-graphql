@@ -17,4 +17,6 @@ export type NewProfile = Omit<Profile, 'id'>;
 export type MutationArguments<T> = {
   id: string;
   dto: T;
+  userId: string;
+  authorId: string;
 };

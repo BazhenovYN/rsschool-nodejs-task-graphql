@@ -2,7 +2,13 @@ import { GraphQLBoolean, GraphQLNonNull, GraphQLObjectType } from 'graphql';
 
 import { changePost, createPost, deletePost } from '../resolvers/post.js';
 import { changeProfile, createProfile, deleteProfile } from '../resolvers/profile.js';
-import { changeUser, createUser, deleteUser } from '../resolvers/user.js';
+import {
+  changeUser,
+  createUser,
+  deleteUser,
+  subscribeTo,
+  unsubscribeFrom,
+} from '../resolvers/user.js';
 import { Context, MutationArguments, NewPost, NewProfile, NewUser } from './common.js';
 import { ChangePostInputType, CreatePostInputType, PostType } from './post.js';
 import {
@@ -102,6 +108,30 @@ export const rootMutation = new GraphQLObjectType<unknown, Context>({
       },
       resolve: async (_source, { id }: MutationArguments<never>, { prisma }) =>
         deleteProfile(id, prisma),
+    },
+    subscribeTo: {
+      type: UserType,
+      args: {
+        userId: { type: new GraphQLNonNull(UUIDType) },
+        authorId: { type: new GraphQLNonNull(UUIDType) },
+      },
+      resolve: async (
+        _source,
+        { userId, authorId }: MutationArguments<never>,
+        { prisma },
+      ) => subscribeTo(userId, authorId, prisma),
+    },
+    unsubscribeFrom: {
+      type: GraphQLBoolean,
+      args: {
+        userId: { type: new GraphQLNonNull(UUIDType) },
+        authorId: { type: new GraphQLNonNull(UUIDType) },
+      },
+      resolve: async (
+        _source,
+        { userId, authorId }: MutationArguments<never>,
+        { prisma },
+      ) => unsubscribeFrom(userId, authorId, prisma),
     },
   },
 });
