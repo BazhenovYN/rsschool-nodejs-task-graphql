@@ -1,5 +1,5 @@
 import { PrismaClient } from '@prisma/client';
-import { NewPost } from '../types/common.js';
+import { Context, NewPost } from '../types/common.js';
 
 export const getPosts = (prisma: PrismaClient) => {
   return prisma.post.findMany();
@@ -13,7 +13,7 @@ export const getPostById = (id: string, prisma: PrismaClient) => {
   });
 };
 
-export const getPostsByAuthorId = (authorId: string, prisma: PrismaClient) => {
+export const getPostsByAuthorId = (authorId: string, { prisma }: Context) => {
   return prisma.post.findMany({
     where: {
       authorId,

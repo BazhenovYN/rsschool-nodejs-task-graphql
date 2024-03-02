@@ -7,7 +7,6 @@ import {
   GraphQLObjectType,
 } from 'graphql';
 
-import { getMemberTypeById } from '../resolvers/memberType.js';
 import { Context } from './common.js';
 import { MemberType, MemberTypeEnumType } from './memberType.js';
 import { UUIDType } from './uuid.js';
@@ -22,8 +21,8 @@ export const ProfileType = new GraphQLObjectType<Profile, Context>({
     memberTypeId: { type: new GraphQLNonNull(MemberTypeEnumType) },
     memberType: {
       type: MemberType,
-      resolve: ({ memberTypeId }, _args, { prisma }) =>
-        getMemberTypeById(memberTypeId, prisma),
+      resolve: ({ memberTypeId }, _args, { loaders }) =>
+        loaders.memberTypes.load(memberTypeId),
     },
   },
 });

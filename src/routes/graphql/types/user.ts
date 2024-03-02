@@ -8,9 +8,6 @@ import {
   GraphQLString,
 } from 'graphql';
 
-import { getPostsByAuthorId } from '../resolvers/post.js';
-import { getProfileByUserId } from '../resolvers/profile.js';
-import { subscribedToUser, userSubscribedTo } from '../resolvers/user.js';
 import { Context } from './common.js';
 import { PostType } from './post.js';
 import { ProfileType } from './profile.js';
@@ -24,19 +21,19 @@ export const UserType: GraphQLObjectType = new GraphQLObjectType<User, Context>(
     balance: { type: GraphQLFloat },
     posts: {
       type: new GraphQLNonNull(new GraphQLList(PostType)),
-      resolve: async ({ id }, _args, { prisma }) => getPostsByAuthorId(id, prisma),
+      resolve: async ({ id }, _args, { loaders }) => loaders.postsByAuthorId.load(id),
     },
     profile: {
       type: ProfileType,
-      resolve: async ({ id }, _args, { prisma }) => getProfileByUserId(id, prisma),
+      resolve: async ({ id }, _args, { loaders }) => loaders.profilesByUserId.load(id),
     },
     userSubscribedTo: {
       type: new GraphQLList(UserType),
-      resolve: async ({ id }, _args, { prisma }) => userSubscribedTo(id, prisma),
+      resolve: async ({ id }, _args, { loaders }) => loaders.userSubscribedTo.load(id),
     },
     subscribedToUser: {
       type: new GraphQLList(UserType),
-      resolve: async ({ id }, _args, { prisma }) => subscribedToUser(id, prisma),
+      resolve: async ({ id }, _args, { loaders }) => loaders.subscribedToUser.load(id),
     },
   }),
 });

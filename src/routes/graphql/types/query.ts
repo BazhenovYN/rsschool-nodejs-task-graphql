@@ -16,15 +16,15 @@ export const rootQuery = new GraphQLObjectType<unknown, Context>({
   fields: {
     users: {
       type: new GraphQLList(UserType),
-      resolve: async (_source, _args, { prisma }) => getUsers(prisma),
+      resolve: async (_source, _args, context) => getUsers(context),
     },
     user: {
       type: UserType,
       args: {
         id: { type: new GraphQLNonNull(UUIDType) },
       },
-      resolve: async (_source, { id }: QueryArguments, { prisma }) =>
-        getUserById(id, prisma),
+      resolve: async (_source, { id }: QueryArguments, context) =>
+        getUserById(id, context),
     },
     posts: {
       type: new GraphQLList(PostType),
@@ -35,8 +35,8 @@ export const rootQuery = new GraphQLObjectType<unknown, Context>({
       args: {
         id: { type: new GraphQLNonNull(UUIDType) },
       },
-      resolve: async (_source, { id }: QueryArguments, { prisma }) =>
-        getPostsByAuthorId(id, prisma),
+      resolve: async (_source, { id }: QueryArguments, context) =>
+        getPostsByAuthorId(id, context),
     },
     post: {
       type: PostType,

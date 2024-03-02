@@ -9,7 +9,16 @@ import {
   subscribeTo,
   unsubscribeFrom,
 } from '../resolvers/user.js';
-import { Context, MutationArguments, NewPost, NewProfile, NewUser } from './common.js';
+import {
+  ChangeUserDTO,
+  Context,
+  CreateUserDTO,
+  MutationArguments,
+  NewPost,
+  NewProfile,
+  subscribeParams,
+  unsubscribeParams,
+} from './common.js';
 import { ChangePostInputType, CreatePostInputType, PostType } from './post.js';
 import {
   ChangeProfileInputType,
@@ -29,7 +38,7 @@ export const rootMutation = new GraphQLObjectType<unknown, Context>({
           type: new GraphQLNonNull(CreateUserInputType),
         },
       },
-      resolve: async (_source, { dto }: MutationArguments<NewUser>, { prisma }) =>
+      resolve: async (_source, { dto }: CreateUserDTO, { prisma }) =>
         createUser(dto, prisma),
     },
     changeUser: {
@@ -40,7 +49,7 @@ export const rootMutation = new GraphQLObjectType<unknown, Context>({
           type: new GraphQLNonNull(ChangeUserInputType),
         },
       },
-      resolve: async (_source, { id, dto }: MutationArguments<NewUser>, { prisma }) =>
+      resolve: async (_source, { id, dto }: ChangeUserDTO, { prisma }) =>
         changeUser(id, dto, prisma),
     },
     deleteUser: {
@@ -115,11 +124,8 @@ export const rootMutation = new GraphQLObjectType<unknown, Context>({
         userId: { type: new GraphQLNonNull(UUIDType) },
         authorId: { type: new GraphQLNonNull(UUIDType) },
       },
-      resolve: async (
-        _source,
-        { userId, authorId }: MutationArguments<never>,
-        { prisma },
-      ) => subscribeTo(userId, authorId, prisma),
+      resolve: async (_source, { userId, authorId }: subscribeParams, { prisma }) =>
+        subscribeTo(userId, authorId, prisma),
     },
     unsubscribeFrom: {
       type: GraphQLBoolean,
@@ -127,11 +133,8 @@ export const rootMutation = new GraphQLObjectType<unknown, Context>({
         userId: { type: new GraphQLNonNull(UUIDType) },
         authorId: { type: new GraphQLNonNull(UUIDType) },
       },
-      resolve: async (
-        _source,
-        { userId, authorId }: MutationArguments<never>,
-        { prisma },
-      ) => unsubscribeFrom(userId, authorId, prisma),
+      resolve: async (_source, { userId, authorId }: unsubscribeParams, { prisma }) =>
+        unsubscribeFrom(userId, authorId, prisma),
     },
   },
 });

@@ -1,11 +1,11 @@
 import { PrismaClient } from '@prisma/client';
-import { NewUser } from '../types/common.js';
+import { ChangeUserDTO, Context, CreateUserDTO } from '../types/common.js';
 
-export const getUsers = async (prisma: PrismaClient) => {
+export const getUsers = async ({ prisma }: Context) => {
   return prisma.user.findMany();
 };
 
-export const getUserById = async (id: string, prisma: PrismaClient) => {
+export const getUserById = async (id: string, { prisma }: Context) => {
   return prisma.user.findUnique({
     where: {
       id,
@@ -37,13 +37,17 @@ export const subscribedToUser = async (userId: string, prisma: PrismaClient) => 
   });
 };
 
-export const createUser = async (user: NewUser, prisma: PrismaClient) => {
+export const createUser = async (user: CreateUserDTO['dto'], prisma: PrismaClient) => {
   return prisma.user.create({
     data: user,
   });
 };
 
-export const changeUser = async (id: string, user: NewUser, prisma: PrismaClient) => {
+export const changeUser = async (
+  id: ChangeUserDTO['id'],
+  user: ChangeUserDTO['dto'],
+  prisma: PrismaClient,
+) => {
   return prisma.user.update({
     where: { id },
     data: user,
