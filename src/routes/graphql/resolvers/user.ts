@@ -1,8 +1,33 @@
 import { PrismaClient } from '@prisma/client';
+import { GraphQLResolveInfo } from 'graphql';
+import {
+  ResolveTree,
+  parseResolveInfo,
+  simplifyParsedResolveInfoFragmentWithType,
+} from 'graphql-parse-resolve-info';
+
 import { ChangeUserDTO, Context, CreateUserDTO } from '../types/common.js';
 
-export const getUsers = async ({ prisma }: Context) => {
-  return prisma.user.findMany();
+export const getUsers = async (
+  { prisma, loaders }: Context,
+  info: GraphQLResolveInfo,
+) => {
+  const parsedResolveInfoFragment = parseResolveInfo(info) as ResolveTree;
+  const { fields } = simplifyParsedResolveInfoFragmentWithType(
+    parsedResolveInfoFragment,
+    info.returnType,
+  );
+
+  const users = await prisma.user.findMany({
+    include: {
+      subscribedToUser: Object.keys(fields).includes('subscribedToUser'),
+      userSubscribedTo: Object.keys(fields).includes('userSubscribedTo'),
+    },
+  });
+
+  users.forEach((user) => loaders.users.prime(user.id, user));
+
+  return users;
 };
 
 export const getUserById = async (id: string, { prisma }: Context) => {

@@ -1,4 +1,4 @@
-import { User } from '@prisma/client';
+import { SubscribersOnAuthors, User } from '@prisma/client';
 import {
   GraphQLFloat,
   GraphQLInputObjectType,
@@ -13,7 +13,12 @@ import { PostType } from './post.js';
 import { ProfileType } from './profile.js';
 import { UUIDType } from './uuid.js';
 
-export const UserType: GraphQLObjectType = new GraphQLObjectType<User, Context>({
+interface UserExtended extends User {
+  subscribedToUser?: SubscribersOnAuthors[];
+  userSubscribedTo?: SubscribersOnAuthors[];
+}
+
+export const UserType: GraphQLObjectType = new GraphQLObjectType<UserExtended, Context>({
   name: 'User',
   fields: () => ({
     id: { type: new GraphQLNonNull(UUIDType) },
@@ -29,11 +34,25 @@ export const UserType: GraphQLObjectType = new GraphQLObjectType<User, Context>(
     },
     userSubscribedTo: {
       type: new GraphQLList(UserType),
-      resolve: async ({ id }, _args, { loaders }) => loaders.userSubscribedTo.load(id),
+      resolve: async ({ id, userSubscribedTo }, _args, { loaders }) => {
+        if (userSubscribedTo) {
+          return loaders.users.loadMany(
+            userSubscribedTo.map((record) => record.authorId),
+          );
+        }
+        return loaders.userSubscribedTo.load(id);
+      },
     },
     subscribedToUser: {
       type: new GraphQLList(UserType),
-      resolve: async ({ id }, _args, { loaders }) => loaders.subscribedToUser.load(id),
+      resolve: async ({ id, subscribedToUser }, _args, { loaders }) => {
+        if (subscribedToUser) {
+          return loaders.users.loadMany(
+            subscribedToUser.map((record) => record.subscriberId),
+          );
+        }
+        return loaders.subscribedToUser.load(id);
+      },
     },
   }),
 });

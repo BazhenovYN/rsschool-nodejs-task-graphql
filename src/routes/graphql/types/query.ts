@@ -16,7 +16,7 @@ export const rootQuery = new GraphQLObjectType<unknown, Context>({
   fields: {
     users: {
       type: new GraphQLList(UserType),
-      resolve: async (_source, _args, context) => getUsers(context),
+      resolve: async (_source, _args, context, info) => getUsers(context, info),
     },
     user: {
       type: UserType,
