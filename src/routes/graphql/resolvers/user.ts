@@ -6,7 +6,7 @@ import {
   simplifyParsedResolveInfoFragmentWithType,
 } from 'graphql-parse-resolve-info';
 
-import { ChangeUserDTO, Context, CreateUserDTO } from '../types/common.js';
+import { ChangeUserDTO, Context, CreateUserDTO, DeleteUserDTO } from '../types/common.js';
 
 export const getUsers = async (
   { prisma, loaders }: Context,
@@ -20,8 +20,8 @@ export const getUsers = async (
 
   const users = await prisma.user.findMany({
     include: {
-      subscribedToUser: Object.keys(fields).includes('subscribedToUser'),
-      userSubscribedTo: Object.keys(fields).includes('userSubscribedTo'),
+      subscribedToUser: 'subscribedToUser' in fields,
+      userSubscribedTo: 'userSubscribedTo' in fields,
     },
   });
 
@@ -30,7 +30,7 @@ export const getUsers = async (
   return users;
 };
 
-export const getUserById = async (id: string, { prisma }: Context) => {
+export const getUserById = async (id: string, prisma: PrismaClient) => {
   return prisma.user.findUnique({
     where: {
       id,
@@ -79,7 +79,7 @@ export const changeUser = async (
   });
 };
 
-export const deleteUser = async (id: string, prisma: PrismaClient) => {
+export const deleteUser = async (id: DeleteUserDTO['id'], prisma: PrismaClient) => {
   await prisma.user.delete({
     where: {
       id,

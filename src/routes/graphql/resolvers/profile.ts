@@ -1,5 +1,5 @@
 import { PrismaClient } from '@prisma/client';
-import { NewProfile } from '../types/common.js';
+import { ChangeProfileDTO, CreateProfileDTO, DeleteProfileDTO } from '../types/common.js';
 
 export const getProfiles = async (prisma: PrismaClient) => {
   return prisma.profile.findMany();
@@ -21,15 +21,18 @@ export const getProfileByUserId = async (userId: string, prisma: PrismaClient) =
   });
 };
 
-export const createProfile = async (profile: NewProfile, prisma: PrismaClient) => {
+export const createProfile = async (
+  profile: CreateProfileDTO['dto'],
+  prisma: PrismaClient,
+) => {
   return prisma.profile.create({
     data: profile,
   });
 };
 
 export const changeProfile = async (
-  id: string,
-  profile: NewProfile,
+  id: ChangeProfileDTO['id'],
+  profile: ChangeProfileDTO['dto'],
   prisma: PrismaClient,
 ) => {
   return prisma.profile.update({
@@ -38,7 +41,7 @@ export const changeProfile = async (
   });
 };
 
-export const deleteProfile = async (id: string, prisma: PrismaClient) => {
+export const deleteProfile = async (id: DeleteProfileDTO['id'], prisma: PrismaClient) => {
   await prisma.profile.delete({
     where: {
       id,

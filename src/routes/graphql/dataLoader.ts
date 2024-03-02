@@ -1,5 +1,6 @@
-import { MemberType, PrismaClient, Profile, User } from '@prisma/client';
+import { MemberType, Post, PrismaClient, Profile, User } from '@prisma/client';
 import DataLoader from 'dataloader';
+import { Nullable } from './types/common.js';
 
 const getGenUsers = (prisma: PrismaClient) => async (ids: readonly string[]) => {
   const users = await prisma.user.findMany({
@@ -114,11 +115,15 @@ const getGenMemberTypeById = (prisma: PrismaClient) => async (ids: readonly stri
 
 export const createLoaders = (prisma: PrismaClient) => {
   return {
-    users: new DataLoader(getGenUsers(prisma)),
-    postsByAuthorId: new DataLoader(getGenPostsByAuthorId(prisma)),
-    profilesByUserId: new DataLoader(getGenProfilesByUserId(prisma)),
-    userSubscribedTo: new DataLoader(getGenUserSubscribedTo(prisma)),
-    subscribedToUser: new DataLoader(getGenSubscribedToUser(prisma)),
-    memberTypes: new DataLoader(getGenMemberTypeById(prisma)),
+    users: new DataLoader<string, Nullable<User>>(getGenUsers(prisma)),
+    postsByAuthorId: new DataLoader<string, Post[]>(getGenPostsByAuthorId(prisma)),
+    profilesByUserId: new DataLoader<string, Nullable<Profile>>(
+      getGenProfilesByUserId(prisma),
+    ),
+    userSubscribedTo: new DataLoader<string, User[]>(getGenUserSubscribedTo(prisma)),
+    subscribedToUser: new DataLoader<string, User[]>(getGenSubscribedToUser(prisma)),
+    memberTypes: new DataLoader<string, Nullable<MemberType>>(
+      getGenMemberTypeById(prisma),
+    ),
   };
 };

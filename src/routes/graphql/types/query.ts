@@ -23,8 +23,8 @@ export const rootQuery = new GraphQLObjectType<unknown, Context>({
       args: {
         id: { type: new GraphQLNonNull(UUIDType) },
       },
-      resolve: async (_source, { id }: QueryArguments, context) =>
-        getUserById(id, context),
+      resolve: async (_source, { id }: QueryArguments, { prisma }) =>
+        getUserById(id, prisma),
     },
     posts: {
       type: new GraphQLList(PostType),
@@ -35,8 +35,8 @@ export const rootQuery = new GraphQLObjectType<unknown, Context>({
       args: {
         id: { type: new GraphQLNonNull(UUIDType) },
       },
-      resolve: async (_source, { id }: QueryArguments, context) =>
-        getPostsByAuthorId(id, context),
+      resolve: async (_source, { id }: QueryArguments, { prisma }) =>
+        getPostsByAuthorId(id, prisma),
     },
     post: {
       type: PostType,

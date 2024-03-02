@@ -1,6 +1,15 @@
 import { Static } from '@fastify/type-provider-typebox';
-import { MemberType, Post, PrismaClient, Profile, User } from '@prisma/client';
-import DataLoader from 'dataloader';
+import { PrismaClient } from '@prisma/client';
+import {
+  changePostByIdSchema,
+  createPostSchema,
+  postFields,
+} from '../../posts/schemas.js';
+import {
+  changeProfileByIdSchema,
+  createProfileSchema,
+  profileFields,
+} from '../../profiles/schemas.js';
 import {
   subscribeToUserSchema,
   unsubscribeFromUserSchema,
@@ -10,32 +19,17 @@ import {
   createUserSchema,
   userFields,
 } from '../../users/schemas.js';
+import { createLoaders } from '../dataLoader.js';
+
+export type Nullable<T> = T | null;
 
 export type Context = {
   prisma: PrismaClient;
-  loaders: {
-    users: DataLoader<string, User | null>;
-    postsByAuthorId: DataLoader<string, Post[] | null>;
-    profilesByUserId: DataLoader<string, Profile | null>;
-    userSubscribedTo: DataLoader<string, User[] | null>;
-    subscribedToUser: DataLoader<string, User[] | null>;
-    memberTypes: DataLoader<string, MemberType | null>;
-  };
+  loaders: ReturnType<typeof createLoaders>;
 };
 
 export type QueryArguments = {
   id: string;
-};
-
-export type NewUser = Omit<User, 'id'>;
-
-export type NewPost = Omit<Post, 'id'>;
-
-export type NewProfile = Omit<Profile, 'id'>;
-
-export type MutationArguments<T> = {
-  id: string;
-  dto: T;
 };
 
 export type CreateUserDTO = {
@@ -47,7 +41,37 @@ export type ChangeUserDTO = {
   dto: Static<(typeof changeUserByIdSchema)['body']>;
 };
 
-export type subscribeParams = Static<(typeof subscribeToUserSchema)['params']> &
+export type DeleteUserDTO = {
+  id: Static<(typeof userFields)['id']>;
+};
+
+export type CreatePostDTO = {
+  dto: Static<(typeof createPostSchema)['body']>;
+};
+
+export type ChangePostDTO = {
+  id: Static<(typeof postFields)['id']>;
+  dto: Static<(typeof changePostByIdSchema)['body']>;
+};
+
+export type DeletePostDTO = {
+  id: Static<(typeof postFields)['id']>;
+};
+
+export type CreateProfileDTO = {
+  dto: Static<(typeof createProfileSchema)['body']>;
+};
+
+export type ChangeProfileDTO = {
+  id: Static<(typeof profileFields)['id']>;
+  dto: Static<(typeof changeProfileByIdSchema)['body']>;
+};
+
+export type DeleteProfileDTO = {
+  id: Static<(typeof profileFields)['id']>;
+};
+
+export type SubscribeParams = Static<(typeof subscribeToUserSchema)['params']> &
   Static<(typeof subscribeToUserSchema)['body']>;
 
-export type unsubscribeParams = Static<(typeof unsubscribeFromUserSchema)['params']>;
+export type UnsubscribeParams = Static<(typeof unsubscribeFromUserSchema)['params']>;
